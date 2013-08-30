@@ -172,8 +172,17 @@ exports.process = function (grunt, task, context) {
 	var tmpReporter = path.join(context.temp, TMP_REPORTER);
 	grunt.file.copy(REPORTER, tmpReporter);
 	context.scripts.reporters.unshift(tmpReporter);
+	// remove any exclusions
+	var sources = context.scripts.src.slice();
+	if (context.scripts.exclude) {
+		for (var i = 0; i < context.scripts.exclude.length; i++) {
+			if (sources.indexOf(context.scripts.exclude[i]) !== -1) {
+				sources.slice(sources.indexOf(context.scripts.exclude[i]));
+			}
+		}
+	}
 	// instrument sources
-	var instrumentedSources = instrument(context.scripts.src, context.temp);
+	var instrumentedSources = instrument(sources, context.temp);
 	// replace sources
 	if (context.options.replace == null || context.options.replace) {
 		context.scripts.src = instrumentedSources;
